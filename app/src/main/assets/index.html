@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ur" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
+<title>Azkar o Duain</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Nastaliq+Urdu:wght@400;600&family=Reem+Kufi:wght@500;700&display=swap">
+<style>
+/* Layout: one night-prayer scroll. A single centred column of lantern-lit cards; each card pins its read-count badge at the top corner, Arabic large, Urdu translation below with its own badge. */
+:root {
+  --bg: #0a1a22;
+  --surface: #102a33;
+  --surface-2: #143540;
+  --line: #24505e;
+  --fg: #e9f0ea;
+  --muted: #9fb9b6;
+  --gold: #e2b65c;
+  --on-gold: #1b1403;
+  --done: #62c2a1;
+  --font-ar: "Amiri Quran", "Noto Naskh Arabic", "Traditional Arabic", serif;
+  --font-ur: "Noto Nastaliq Urdu", "Noto Naskh Arabic", serif;
+  --font-ui: "Reem Kufi", "Noto Kufi Arabic", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #e9f1ee;
+    --surface: #ffffff;
+    --surface-2: #f2f8f6;
+    --line: #bfd5d0;
+    --fg: #0e2a31;
+    --muted: #48676a;
+    --gold: #86590a;
+    --on-gold: #ffffff;
+    --done: #12795a;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #e9f1ee;
+  --surface: #ffffff;
+  --surface-2: #f2f8f6;
+  --line: #bfd5d0;
+  --fg: #0e2a31;
+  --muted: #48676a;
+  --gold: #86590a;
+  --on-gold: #ffffff;
+  --done: #12795a;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-ur);
+  padding-block: 0 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--bg);
+}
+main { max-width: 720px; margin-inline: auto; }
+
+header { text-align: center; padding-block: 36px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+header svg { color: var(--gold); }
+h1 { font-family: var(--font-ar); font-weight: 400; font-size: clamp(2.4rem, 10vw, 3.6rem); line-height: 1.5; margin: 0; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); font-size: 1rem; line-height: 2.2; max-width: 34ch; text-wrap: balance; }
+
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 18px; margin-top: 6px; color: var(--muted); font-size: .92rem; line-height: 2; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+
+.badge {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: .95rem;
+  letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  padding: 7px 12px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  direction: rtl;
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+}
+.badge.ar { background: var(--gold); color: var(--on-gold); }
+
+.bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--bg);
+  padding-block: 10px 12px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.track { flex: 1; min-width: 0; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.fill { height: 100%; width: 0; background: var(--gold); transition: width .3s ease; }
+.count { font-family: var(--font-ui); font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums; direction: ltr; white-space: nowrap; }
+.reset { font-family: var(--font-ur); font-size: .85rem; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; cursor: pointer; line-height: 2; }
+
+section { padding-top: 34px; }
+.sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.sec-head h2 { font-family: var(--font-ui); font-weight: 700; font-size: 1.35rem; margin: 0; color: var(--gold); white-space: nowrap; }
+.sec-head::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.sec-sub { margin: -6px 0 14px; color: var(--muted); font-size: .95rem; line-height: 2.2; }
+.bismillah { font-family: var(--font-ar); font-size: clamp(1.6rem, 6vw, 2.2rem); text-align: center; color: var(--gold); margin: 4px 0 18px; line-height: 2; }
+
+.cards { display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card.done { border-color: var(--done); }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.name { font-family: var(--font-ui); font-weight: 500; font-size: 1.05rem; margin: 0; }
+.ref { color: var(--muted); font-size: .85rem; line-height: 2; }
+.ar-text { font-family: var(--font-ar); font-size: clamp(1.55rem, 5.6vw, 2.2rem); line-height: 2.3; margin: 0; text-align: center; text-wrap: pretty; overflow-wrap: anywhere; }
+.ar-text.small { font-size: clamp(1.3rem, 4.6vw, 1.8rem); color: var(--muted); }
+.tr { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.tr-head { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .85rem; }
+.tr p { margin: 0; font-size: 1.05rem; line-height: 2.5; }
+.again { display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed var(--line); padding-top: 12px; }
+.again .lbl { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
+.note-text { margin: 0; font-size: 1.08rem; line-height: 2.5; }
+
+.tick { align-self: flex-start; font-family: var(--font-ur); font-size: .95rem; line-height: 2; background: none; color: var(--fg); border: 1.5px solid var(--line); border-radius: 999px; padding: 2px 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.tick::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.card.done .tick { border-color: var(--done); color: var(--done); }
+.card.done .tick::before { background: var(--done); border-color: var(--done); }
+button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+footer { text-align: center; color: var(--muted); padding-top: 40px; font-size: .95rem; line-height: 2.4; }
+@media (prefers-reduced-motion: reduce) { .fill { transition: none; } }
+</style>
+
+<main dir="rtl" lang="ur">
+  <header>
+    <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="12" y="12" width="40" height="40"/><rect x="12" y="12" width="40" height="40" transform="rotate(45 32 32)"/><circle cx="32" cy="32" r="9"/></g></svg>
+    <h1>اَذْکار و دُعائیں</h1>
+    <p class="lede">ہر عمل کے ساتھ لکھا ہے کہ عربی کتنی بار پڑھنی ہے اور ترجمہ کتنی بار۔</p>
+    <div class="legend">
+      <span><b class="badge ar">×11</b> عربی اتنی بار پڑھیں</span>
+      <span><b class="badge">×3</b> ترجمہ اتنی بار پڑھیں</span>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <span class="count" id="count">0 / 0</span>
+    <button class="reset" id="reset" type="button">دوبارہ شروع</button>
+  </div>
+
+  <div id="root"></div>
+
+  <footer>اللہ ہماری دعاؤں کو قبول فرمائے۔ آمین</footer>
+</main>
+
+<script>
+var SECTIONS = [
+{
+  title: "اذکار",
+  items: [
+    { name: "درودِ ابراہیمی", c: 11, t: 1,
+      ar: "اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَّعَلٰى اٰلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى اِبْرَاهِيْمَ وَعَلٰى اٰلِ اِبْرَاهِيْمَ اِنَّكَ حَمِيْدٌ مَّجِيْدٌ ۝ اَللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَّعَلٰى اٰلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى اِبْرَاهِيْمَ وَعَلٰى اٰلِ اِبْرَاهِيْمَ اِنَّكَ حَمِيْدٌ مَّجِيْدٌ",
+      ur: "اے اللہ! رحمت نازل فرما محمد ﷺ پر اور آلِ محمد پر، جیسے تو نے رحمت نازل فرمائی ابراہیم علیہ السلام پر اور آلِ ابراہیم پر، بے شک تو تعریف کے لائق، بزرگی والا ہے۔ اے اللہ! برکت نازل فرما محمد ﷺ پر اور آلِ محمد پر، جیسے تو نے برکت نازل فرمائی ابراہیم علیہ السلام پر اور آلِ ابراہیم پر، بے شک تو تعریف کے لائق، بزرگی والا ہے۔" },
+    { name: "استغفار", c: 11, t: 3,
+      ar: "أَسْتَغْفِرُ اللّٰهَ رَبِّي مِنْ كُلِّ ذَنْبٍ وَأَتُوبُ إِلَيْهِ",
+      ur: "میں اللہ سے، جو میرا رب ہے، اپنے ہر گناہ کی معافی مانگتا ہوں اور اسی کی طرف توبہ کرتا ہوں۔" },
+    { name: "کلمۂ توحید و تسبیح", c: 11, t: 3,
+      ar: "لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ، سُبْحَانَ اللّٰهِ وَالْحَمْدُ لِلّٰهِ وَلَا إِلٰهَ إِلَّا اللّٰهُ وَاللّٰهُ أَكْبَرُ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ",
+      ur: "اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، بادشاہی اسی کی ہے اور تمام تعریف اسی کے لیے ہے اور وہ ہر چیز پر قادر ہے۔ اللہ پاک ہے، تمام تعریف اللہ کے لیے ہے، اللہ کے سوا کوئی معبود نہیں، اللہ سب سے بڑا ہے، اور گناہ سے بچنے کی طاقت اور نیکی کی قوت اللہ ہی کی توفیق سے ہے۔" },
+    { name: "توحید کے وسیلے سے دعا", c: 11, t: 3,
+      ar: "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِأَنِّي أَشْهَدُ أَنَّكَ أَنْتَ اللّٰهُ لَا إِلٰهَ إِلَّا أَنْتَ الْأَحَدُ الصَّمَدُ الَّذِي لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ",
+      ur: "اے اللہ! میں تجھ سے مانگتا ہوں اس وسیلے سے کہ میں گواہی دیتا ہوں بے شک تو ہی اللہ ہے، تیرے سوا کوئی معبود نہیں، تو اکیلا اور بے نیاز ہے، جس نے نہ کسی کو جنا اور نہ وہ جنا گیا، اور نہ کوئی اس کے برابر ہے۔" },
+    { name: "دعائے یونس علیہ السلام", ref: "سورۃ الانبیاء، آیت ۸۷", c: 11, t: 3,
+      ar: "لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+      ur: "تیرے سوا کوئی معبود نہیں، تو پاک ہے، بے شک میں ہی ظالموں میں سے تھا۔" },
+    { name: "حسبنا اللہ", ref: "سورۃ آلِ عمران، آیت ۱۷۳", c: 11, t: 3,
+      ar: "حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَكِيلُ",
+      ur: "ہمیں اللہ کافی ہے اور وہ بہترین کارساز ہے۔" },
+    { name: "یا حی یا قیوم", c: 11, t: 3,
+      ar: "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَىٰ نَفْسِي طَرْفَةَ عَيْنٍ",
+      ur: "اے زندہ، اے سب کو تھامنے والے! میں تیری رحمت کے وسیلے سے فریاد کرتا ہوں، میرے سارے کام سنوار دے اور پلک جھپکنے کے برابر بھی مجھے میرے نفس کے سپرد نہ کر۔" }
+  ]
+},
+{
+  title: "آیات",
+  bismillah: "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ",
+  items: [
+    { name: "الٓمٓ", ref: "سورۃ آلِ عمران، آیات ۱–۲", c: 3, t: 3,
+      ar: "الٓمٓ ۝ اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+      ur: "الٓمٓ۔ اللہ، اس کے سوا کوئی معبود نہیں، وہ زندہ ہے، سب کو تھامنے والا ہے۔" },
+    { name: "وَإِلٰهُكُمْ إِلٰهٌ وَاحِدٌ", ref: "سورۃ البقرہ، آیت ۱۶۳", c: 3, t: 3,
+      ar: "وَإِلٰهُكُمْ إِلٰهٌ وَاحِدٌ ۖ لَا إِلٰهَ إِلَّا هُوَ الرَّحْمٰنُ الرَّحِيمُ",
+      ur: "اور تمہارا معبود ایک ہی معبود ہے، اس کے سوا کوئی معبود نہیں، وہ نہایت مہربان، بہت رحم والا ہے۔" },
+    { name: "اللہ قریب ہے", ref: "سورۃ البقرہ، آیت ۱۸۶", c: 3, t: 1,
+      ar: "وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ ۖ فَلْيَسْتَجِيبُوا لِي وَلْيُؤْمِنُوا بِي لَعَلَّهُمْ يَرْشُدُونَ",
+      ur: "اور (اے نبی ﷺ) جب میرے بندے آپ سے میرے بارے میں پوچھیں تو (بتا دیں کہ) میں قریب ہوں، پکارنے والے کی پکار کا جواب دیتا ہوں جب وہ مجھے پکارتا ہے، پس انہیں چاہیے کہ میرا حکم مانیں اور مجھ پر ایمان رکھیں تاکہ وہ راہِ راست پا جائیں۔" },
+    { name: "بے قرار کی پکار", ref: "سورۃ النمل، آیت ۶۲", c: 3, t: 1,
+      ar: "أَمَّنْ يُجِيبُ الْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ السُّوءَ وَيَجْعَلُكُمْ خُلَفَاءَ الْأَرْضِ ۗ أَإِلٰهٌ مَعَ اللّٰهِ ۚ قَلِيلًا مَا تَذَكَّرُونَ",
+      ur: "بھلا وہ کون ہے جو بے قرار کی پکار سنتا ہے جب وہ اسے پکارتا ہے، اور تکلیف دور کرتا ہے اور تمہیں زمین میں جانشین بناتا ہے؟ کیا اللہ کے ساتھ کوئی اور معبود ہے؟ تم بہت ہی کم نصیحت حاصل کرتے ہو۔" },
+    { name: "مجھے پکارو", ref: "سورۃ غافر، آیت ۶۰", c: 3, t: 1,
+      ar: "وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ ۚ إِنَّ الَّذِينَ يَسْتَكْبِرُونَ عَنْ عِبَادَتِي سَيَدْخُلُونَ جَهَنَّمَ دَاخِرِينَ",
+      ur: "اور تمہارے رب نے فرمایا: مجھے پکارو، میں تمہاری دعا قبول کروں گا۔ بے شک جو لوگ میری عبادت سے تکبر کرتے ہیں وہ عنقریب ذلیل ہو کر جہنم میں داخل ہوں گے۔" },
+    { name: "تقویٰ اور توکل", ref: "سورۃ الطلاق، آیات ۲–۳", c: 1, t: 1,
+      ar: "وَمَنْ يَتَّقِ اللّٰهَ يَجْعَلْ لَهُ مَخْرَجًا ۝ وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَنْ يَتَوَكَّلْ عَلَى اللّٰهِ فَهُوَ حَسْبُهُ ۚ إِنَّ اللّٰهَ بَالِغُ أَمْرِهِ ۚ قَدْ جَعَلَ اللّٰهُ لِكُلِّ شَيْءٍ قَدْرًا",
+      ur: "اور جو اللہ سے ڈرتا ہے اللہ اس کے لیے (مشکل سے) نکلنے کا راستہ بنا دیتا ہے، اور اسے وہاں سے رزق دیتا ہے جہاں سے اسے گمان بھی نہ ہو، اور جو اللہ پر بھروسا کرتا ہے تو وہ اسے کافی ہے۔ بے شک اللہ اپنا کام پورا کر کے رہتا ہے، یقیناً اللہ نے ہر چیز کے لیے ایک اندازہ مقرر کر رکھا ہے۔" }
+  ]
+},
+{
+  title: "دعا",
+  items: [
+    { name: "دعائے موسیٰ علیہ السلام", ref: "سورۃ القصص، آیت ۱۶", c: 11, t: 3,
+      ar: "رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي",
+      ur: "اے میرے رب! بے شک میں نے اپنی جان پر ظلم کیا، پس مجھے معاف فرما دے۔" },
+    { name: "دعائے ابراہیم علیہ السلام", ref: "سورۃ الشعراء، آیات ۷۸–۸۳", c: 1, t: 1,
+      ar: "الَّذِي خَلَقَنِي فَهُوَ يَهْدِينِ ۝ وَالَّذِي هُوَ يُطْعِمُنِي وَيَسْقِينِ ۝ وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ ۝ وَالَّذِي يُمِيتُنِي ثُمَّ يُحْيِينِ ۝ وَالَّذِي أَطْمَعُ أَنْ يَغْفِرَ لِي خَطِيئَتِي يَوْمَ الدِّينِ ۝ رَبِّ هَبْ لِي حُكْمًا وَأَلْحِقْنِي بِالصَّالِحِينَ",
+      ur: "جس نے مجھے پیدا کیا، پھر وہی مجھے راہ دکھاتا ہے۔ اور جو مجھے کھلاتا اور پلاتا ہے۔ اور جب میں بیمار ہوتا ہوں تو وہی مجھے شفا دیتا ہے۔ اور جو مجھے موت دے گا پھر مجھے زندہ کرے گا۔ اور جس سے مجھے امید ہے کہ قیامت کے دن میری خطا معاف فرمائے گا۔ اے میرے رب! مجھے حکمت و دانش عطا فرما اور مجھے نیک لوگوں میں شامل کر دے۔" },
+    { name: "محتاجی کی دعا", ref: "سورۃ القصص، آیت ۲۴", c: 3, t: 1,
+      ar: "رَبِّ إِنِّي لِمَا أَنْزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ",
+      ur: "اے میرے رب! بے شک میں اس بھلائی کا محتاج ہوں جو تو میری طرف نازل فرمائے۔" },
+    { name: "رحمت اور ہدایت کی دعا", ref: "سورۃ الکہف، آیت ۱۰", c: 3, t: 1,
+      ar: "رَبَّنَا آتِنَا مِنْ لَدُنْكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",
+      ur: "اے ہمارے رب! ہمیں اپنے پاس سے رحمت عطا فرما اور ہمارے معاملے میں ہمارے لیے ہدایت و درستی کا سامان مہیا فرما۔" }
+  ]
+},
+{
+  title: "توبہ اور مناجات",
+  items: [
+    { name: "قبول ہونے والی دعاؤں کی یاد", ref: "سورۃ مریم، آیت ۴",
+      note: "اپنی پچھلی وہ دعائیں یاد کریں جو قبول ہوئیں اور جن سے پریشانی دور ہوئی۔ انہیں یاد کرتے ہوئے پہلے ایک بار یہ پڑھیں، پھر ایک بار ترجمہ پڑھ کر ذہن نشین کریں، پھر گیارہ بار یہی پڑھیں۔",
+      c: 1, t: 1,
+      ar: "وَلَمْ أَكُنْ بِدُعَائِكَ رَبِّ شَقِيًّا",
+      ur: "اور اے میرے رب! میں تجھ سے دعا مانگ کر کبھی محروم نہیں رہا۔",
+      again: 11 },
+    { name: "توبہ",
+      note: "پھر اللہ سے کہیں: میں نے تجھ سے توبہ کی، تو توبہ کرنے سے خوش ہوتا ہے، تو اپنے بندے کو بھی خوش کر دے۔" },
+    { name: "اپنی دعائیں",
+      note: "پھر اللہ سے رو رو کر اپنی دعائیں مانگیں۔" }
+  ]
+},
+{
+  title: "سورتیں",
+  items: [
+    { name: "سورۃ الفاتحہ", c: 1, t: 1,
+      ar: "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ ۝ الْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
+      ur: "شروع اللہ کے نام سے جو نہایت مہربان، بہت رحم والا ہے۔ سب تعریف اللہ کے لیے ہے جو تمام جہانوں کا رب ہے۔ نہایت مہربان، بہت رحم والا۔ روزِ جزا کا مالک۔ ہم تیری ہی عبادت کرتے ہیں اور تجھی سے مدد مانگتے ہیں۔ ہمیں سیدھے راستے پر چلا۔ ان لوگوں کے راستے پر جن پر تو نے انعام فرمایا، نہ ان کے راستے پر جن پر غضب ہوا اور نہ گمراہوں کے۔" },
+    { name: "آیت الکرسی", ref: "سورۃ البقرہ، آیت ۲۵۵", c: 1, t: 1,
+      ar: "اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+      ur: "اللہ، اس کے سوا کوئی معبود نہیں، وہ زندہ ہے، سب کو تھامنے والا ہے۔ نہ اسے اونگھ آتی ہے اور نہ نیند۔ آسمانوں اور زمین میں جو کچھ ہے سب اسی کا ہے۔ کون ہے جو اس کے حضور اس کی اجازت کے بغیر سفارش کرے؟ وہ جانتا ہے جو ان کے سامنے ہے اور جو ان کے پیچھے ہے، اور وہ اس کے علم میں سے کسی چیز کا احاطہ نہیں کر سکتے مگر جتنا وہ چاہے۔ اس کی کرسی آسمانوں اور زمین کو محیط ہے اور ان دونوں کی حفاظت اسے تھکاتی نہیں، اور وہی بلند مرتبہ، عظمت والا ہے۔" },
+    { name: "آیاتِ نور", ref: "سورۃ النور، آیات ۳۵–۳۸", c: 1, t: 1,
+      ar: "اللّٰهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ ۚ مَثَلُ نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ ۖ الْمِصْبَاحُ فِي زُجَاجَةٍ ۖ الزُّجَاجَةُ كَأَنَّهَا كَوْكَبٌ دُرِّيٌّ يُوقَدُ مِنْ شَجَرَةٍ مُبَارَكَةٍ زَيْتُونَةٍ لَا شَرْقِيَّةٍ وَلَا غَرْبِيَّةٍ يَكَادُ زَيْتُهَا يُضِيءُ وَلَوْ لَمْ تَمْسَسْهُ نَارٌ ۚ نُورٌ عَلَىٰ نُورٍ ۚ يَهْدِي اللّٰهُ لِنُورِهِ مَنْ يَشَاءُ ۚ وَيَضْرِبُ اللّٰهُ الْأَمْثَالَ لِلنَّاسِ ۗ وَاللّٰهُ بِكُلِّ شَيْءٍ عَلِيمٌ ۝ فِي بُيُوتٍ أَذِنَ اللّٰهُ أَنْ تُرْفَعَ وَيُذْكَرَ فِيهَا اسْمُهُ يُسَبِّحُ لَهُ فِيهَا بِالْغُدُوِّ وَالْآصَالِ ۝ رِجَالٌ لَا تُلْهِيهِمْ تِجَارَةٌ وَلَا بَيْعٌ عَنْ ذِكْرِ اللّٰهِ وَإِقَامِ الصَّلَاةِ وَإِيتَاءِ الزَّكَاةِ ۙ يَخَافُونَ يَوْمًا تَتَقَلَّبُ فِيهِ الْقُلُوبُ وَالْأَبْصَارُ ۝ لِيَجْزِيَهُمُ اللّٰهُ أَحْسَنَ مَا عَمِلُوا وَيَزِيدَهُمْ مِنْ فَضْلِهِ ۗ وَاللّٰهُ يَرْزُقُ مَنْ يَشَاءُ بِغَيْرِ حِسَابٍ",
+      ur: "اللہ آسمانوں اور زمین کا نور ہے۔ اس کے نور کی مثال ایک طاق کی سی ہے جس میں چراغ ہو، چراغ شیشے کے فانوس میں ہو، فانوس گویا چمکتا ہوا تارا ہو، جو برکت والے زیتون کے درخت سے روشن کیا جائے جو نہ مشرقی ہے نہ مغربی، اس کا تیل قریب ہے کہ خود بخود روشن ہو جائے اگرچہ اسے آگ نہ چھوئے۔ نور پر نور ہے۔ اللہ اپنے نور کی طرف جسے چاہتا ہے راہ دکھاتا ہے، اور اللہ لوگوں کے لیے مثالیں بیان کرتا ہے، اور اللہ ہر چیز کو خوب جاننے والا ہے۔ (یہ نور) ان گھروں میں ہے جنہیں بلند کرنے اور جن میں اپنے نام کا ذکر کرنے کا اللہ نے حکم دیا ہے، ان میں صبح و شام اس کی تسبیح کرتے ہیں۔ ایسے مرد جنہیں تجارت اور خرید و فروخت اللہ کے ذکر، نماز قائم کرنے اور زکوٰۃ دینے سے غافل نہیں کرتی، وہ اس دن سے ڈرتے ہیں جس میں دل اور آنکھیں الٹ جائیں گی۔ تاکہ اللہ انہیں ان کے بہترین اعمال کا بدلہ دے اور اپنے فضل سے انہیں مزید بھی عطا کرے، اور اللہ جسے چاہتا ہے بے حساب رزق دیتا ہے۔" },
+    { name: "سورۃ الاخلاص", c: 3, t: 3,
+      ar: "قُلْ هُوَ اللّٰهُ أَحَدٌ ۝ اللّٰهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ",
+      ur: "کہہ دیجیے: وہ اللہ ایک ہے۔ اللہ بے نیاز ہے۔ نہ اس نے کسی کو جنا اور نہ وہ جنا گیا۔ اور نہ کوئی اس کے برابر ہے۔" },
+    { name: "سورۃ الفلق", c: 1, t: 1,
+      ar: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+      ur: "کہہ دیجیے: میں صبح کے رب کی پناہ مانگتا ہوں، ہر اس چیز کے شر سے جو اس نے پیدا کی، اور اندھیری رات کے شر سے جب وہ چھا جائے، اور گرہوں میں پھونکنے والیوں کے شر سے، اور حسد کرنے والے کے شر سے جب وہ حسد کرے۔" },
+    { name: "سورۃ الناس", c: 1, t: 1,
+      ar: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",
+      ur: "کہہ دیجیے: میں لوگوں کے رب کی پناہ مانگتا ہوں، لوگوں کے بادشاہ کی، لوگوں کے معبود کی، وسوسہ ڈالنے والے، پیچھے ہٹ جانے والے (شیطان) کے شر سے، جو لوگوں کے دلوں میں وسوسے ڈالتا ہے، جنوں میں سے ہو یا انسانوں میں سے۔" }
+  ]
+},
+{
+  title: "اختتام",
+  items: [
+    { name: "درودِ ابراہیمی", c: 11,
+      ar: "اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَّعَلٰى اٰلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى اِبْرَاهِيْمَ وَعَلٰى اٰلِ اِبْرَاهِيْمَ اِنَّكَ حَمِيْدٌ مَّجِيْدٌ ۝ اَللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَّعَلٰى اٰلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى اِبْرَاهِيْمَ وَعَلٰى اٰلِ اِبْرَاهِيْمَ اِنَّكَ حَمِيْدٌ مَّجِيْدٌ" }
+  ]
+}
+];
+
+var KEY = "azkar-done-v1";
+var done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { done = {}; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} }
+
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function badge(n, cls) { return '<b class="badge ' + (cls || "") + '">×' + n + '</b>'; }
+
+var total = 0;
+var html = "";
+SECTIONS.forEach(function (sec, si) {
+  html += '<section><div class="sec-head"><h2>' + esc(sec.title) + '</h2></div>';
+  if (sec.bismillah) html += '<p class="bismillah">' + sec.bismillah + '</p>';
+  html += '<div class="cards">';
+  sec.items.forEach(function (it, ii) {
+    var id = si + "-" + ii;
+    total++;
+    html += '<article class="card" data-id="' + id + '">';
+    html += '<div class="top"><div><h3 class="name">' + esc(it.name) + '</h3>' + (it.ref ? '<div class="ref">' + esc(it.ref) + '</div>' : '') + '</div>' + (it.c ? badge(it.c, "ar") : '') + '</div>';
+    if (it.note) html += '<p class="note-text">' + esc(it.note) + '</p>';
+    if (it.ar) html += '<p class="ar-text">' + it.ar + '</p>';
+    if (it.ur) html += '<div class="tr"><div class="tr-head">ترجمہ ' + badge(it.t) + '</div><p>' + esc(it.ur) + '</p></div>';
+    if (it.again) html += '<div class="again"><div class="lbl">پھر یہی دعا ' + badge(it.again, "ar") + '</div><p class="ar-text small">' + it.ar + '</p></div>';
+    html += '<button class="tick" type="button" aria-pressed="false">پڑھ لیا</button>';
+    html += '</article>';
+  });
+  html += '</div></section>';
+});
+document.getElementById("root").innerHTML = html;
+
+var fill = document.getElementById("fill");
+var countEl = document.getElementById("count");
+function paint() {
+  var n = 0;
+  document.querySelectorAll(".card").forEach(function (c) {
+    var on = !!done[c.getAttribute("data-id")];
+    c.classList.toggle("done", on);
+    c.querySelector(".tick").setAttribute("aria-pressed", on ? "true" : "false");
+    if (on) n++;
+  });
+  fill.style.width = (total ? (n / total) * 100 : 0) + "%";
+  countEl.textContent = n + " / " + total;
+}
+document.getElementById("root").addEventListener("click", function (e) {
+  var btn = e.target.closest(".tick");
+  if (!btn) return;
+  var id = btn.closest(".card").getAttribute("data-id");
+  if (done[id]) delete done[id]; else done[id] = 1;
+  save(); paint();
+});
+var rb = document.getElementById("reset"), rt = null;
+rb.addEventListener("click", function () {
+  if (rt) { clearTimeout(rt); rt = null; done = {}; save(); paint(); rb.textContent = "دوبارہ شروع"; return; }
+  rb.textContent = "پکا؟ دوبارہ دبائیں";
+  rt = setTimeout(function () { rt = null; rb.textContent = "دوبارہ شروع"; }, 3000);
+});
+paint();
+</script>
+
+</body></html>
